@@ -388,7 +388,7 @@ class CardEditorApp(tk.Tk):
     def _build_layout(self) -> None:
         toolbar = ttk.Frame(self, padding=(8, 8, 8, 4))
         toolbar.pack(fill=tk.X)
-        ttk.Button(toolbar, text="New Card from PNG", command=self.create_v3_card).pack(side=tk.LEFT, padx=(0, 6))
+        ttk.Button(toolbar, text="New V3 Card from PNG", command=self.create_v3_card).pack(side=tk.LEFT, padx=(0, 6))
         ttk.Button(toolbar, text="Open", command=self.open_file).pack(side=tk.LEFT, padx=(0, 6))
         ttk.Button(toolbar, text="Save", command=self.save_file).pack(side=tk.LEFT, padx=(0, 6))
         ttk.Button(toolbar, text="Save As", command=self.save_file_as).pack(side=tk.LEFT)
