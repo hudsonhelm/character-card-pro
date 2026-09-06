@@ -347,7 +347,7 @@ def _parse_json_box(label: str, value: str, default: Any) -> Any:
 class CardEditorApp(tk.Tk):
     def __init__(self) -> None:
         super().__init__()
-        self.title("Chub PNG Character Card Editor")
+        self.title("Character Card Pro")
         self.geometry("1040x760")
         self.minsize(860, 620)
 

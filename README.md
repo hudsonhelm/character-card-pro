@@ -1,13 +1,18 @@
-# Chub PNG Character Card Editor
+# Character Card Pro
+
+A simple Windows desktop utility for creating and editing PNG character cards. It runs completely locally: no account, browser, server, telemetry, or network connection is used at runtime.
+
+> **Download:** Get the latest portable Windows build from this repository's [Releases page](../../releases/latest). Until the first derivative release is published, run the application from source as described below.
 
 ## English
 
-Chub PNG Character Card Editor is a small local desktop tool for reading and editing chub.ai / SillyTavern PNG character cards.
+Character Card Pro is a derivative of the Chub PNG Character Card Editor for reading, creating, and editing chub.ai / SillyTavern-compatible PNG character cards.
 
 It reads character metadata embedded in PNG text chunks, edits the card fields in separate text boxes, and writes the updated metadata back into the PNG without re-encoding the image pixels.
 
 ### Features
 
+- Create a new Character Card V3 from any ordinary PNG with one click, or choose V2 from the File menu.
 - Open PNG character cards that store base64 JSON in `chara` or `ccv3` text chunks.
 - Edit common Character Card V2/V3 fields, including name, description, personality, scenario, first message, example dialogues, creator notes, system prompt, post-history instructions, tags, alternate greetings, character book JSON, and extensions JSON.
 - Supports UTF-8 content, including English, Chinese, Japanese, and other languages inside the card data.
@@ -15,9 +20,17 @@ It reads character metadata embedded in PNG text chunks, edits the card fields i
 - Keeps unknown `data` fields and top-level extra fields so platform-specific extensions are not silently discarded.
 - Replaces only the card metadata chunk and does not re-compress or redraw the PNG image.
 
+### Quick Start
+
+1. Choose **New Card from PNG** to turn an ordinary PNG into a new V3 card, or use **File → New Card from PNG → Character Card V2** when V2 is required.
+2. Choose the source PNG, fill in the character fields, and select **Save** or **Save As**.
+3. The first save of a new card always asks for a destination so the source artwork is not overwritten accidentally.
+
+To edit an existing V2 or V3 card, choose **Open**, make the changes, then use **Save** or **Save As**.
+
 ### Download
 
-For normal Windows use, download the English EXE from the GitHub Releases page.
+For normal Windows use, download the portable EXE from the [GitHub Releases page](../../releases/latest).
 
 ### Run From Source
 
@@ -32,6 +45,17 @@ Requirements: Python 3.10+ with `tkinter`.
 ```powershell
 python -m unittest .\test_card_editor_core.py
 ```
+
+### Format and Safety Notes
+
+- New cards default to Character Card V3 (`ccv3`, specification version `3.0`). V2 (`chara`, version `2.0`) remains available for compatibility.
+- Existing unknown/custom top-level and `data` fields are retained when a card is edited and saved.
+- PNG chunks are copied directly; image pixels are not decoded or recompressed.
+- Normal use is fully offline and makes no network requests.
+
+### Attribution and License
+
+This project is derived from [linnnn89/chub-png-card-editor](https://github.com/linnnn89/chub-png-card-editor), originally copyright © 2026 linnnn89. The upstream MIT license and copyright notice are preserved in [LICENSE](LICENSE).
 
 ## 中文
 
