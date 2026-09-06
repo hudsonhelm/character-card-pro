@@ -254,6 +254,48 @@ def _empty_v2_card() -> dict[str, Any]:
     }
 
 
+def _empty_v3_card() -> dict[str, Any]:
+    return {
+        "spec": "chara_card_v3",
+        "spec_version": "3.0",
+        "data": {
+            "name": "",
+            "description": "",
+            "personality": "",
+            "scenario": "",
+            "first_mes": "",
+            "mes_example": "",
+            "creator_notes": "",
+            "system_prompt": "",
+            "post_history_instructions": "",
+            "alternate_greetings": [],
+            "tags": [],
+            "creator": "",
+            "character_version": "",
+            "extensions": {},
+            "group_only_greetings": [],
+        },
+    }
+
+
+def new_card_from_png(path: os.PathLike[str] | str, card_version: str = "v3") -> LoadedCard:
+    png_path = Path(path)
+    chunks = read_png_chunks(png_path)
+    if _card_text_chunks(chunks):
+        raise CardFormatError("This PNG already contains character-card metadata. Use Open to edit the existing card.")
+
+    if card_version == "v3":
+        card = _empty_v3_card()
+        keyword = "ccv3"
+    elif card_version == "v2":
+        card = _empty_v2_card()
+        keyword = "chara"
+    else:
+        raise CardFormatError("New cards must use Character Card V2 or V3.")
+
+    return LoadedCard(png_path, keyword, card, json.dumps(card, ensure_ascii=False, indent=2))
+
+
 def normalize_for_editing(card: dict[str, Any]) -> dict[str, Any]:
     normalized = copy.deepcopy(card)
     if not isinstance(normalized.get("data"), dict):
@@ -318,7 +360,7 @@ class CardEditorApp(tk.Tk):
         self.entries: dict[str, ttk.Entry] = {}
         self.json_boxes: dict[str, ScrolledText] = {}
         self.raw_box: ScrolledText | None = None
-        self.status_var = tk.StringVar(value="Ready. Open a Chub/SillyTavern PNG card to begin.")
+        self.status_var = tk.StringVar(value="Ready. Open a card or create one from an ordinary PNG.")
 
         self._build_menu()
         self._build_layout()
@@ -327,6 +369,11 @@ class CardEditorApp(tk.Tk):
     def _build_menu(self) -> None:
         menu = tk.Menu(self)
         file_menu = tk.Menu(menu, tearoff=False)
+        new_menu = tk.Menu(file_menu, tearoff=False)
+        new_menu.add_command(label="Character Card V3 (recommended)", command=self.create_v3_card)
+        new_menu.add_command(label="Character Card V2", command=self.create_v2_card)
+        file_menu.add_cascade(label="New Card from PNG", menu=new_menu)
+        file_menu.add_separator()
         file_menu.add_command(label="Open", command=self.open_file, accelerator="Ctrl+O")
         file_menu.add_command(label="Save", command=self.save_file, accelerator="Ctrl+S")
         file_menu.add_command(label="Save As", command=self.save_file_as, accelerator="Ctrl+Shift+S")
@@ -341,6 +388,7 @@ class CardEditorApp(tk.Tk):
     def _build_layout(self) -> None:
         toolbar = ttk.Frame(self, padding=(8, 8, 8, 4))
         toolbar.pack(fill=tk.X)
+        ttk.Button(toolbar, text="New Card from PNG", command=self.create_v3_card).pack(side=tk.LEFT, padx=(0, 6))
         ttk.Button(toolbar, text="Open", command=self.open_file).pack(side=tk.LEFT, padx=(0, 6))
         ttk.Button(toolbar, text="Save", command=self.save_file).pack(side=tk.LEFT, padx=(0, 6))
         ttk.Button(toolbar, text="Save As", command=self.save_file_as).pack(side=tk.LEFT)
@@ -488,7 +536,11 @@ class CardEditorApp(tk.Tk):
         greetings = [part.strip() for part in greetings_text.split("\n---\n") if part.strip()]
         data["alternate_greetings"] = greetings
 
-        data["character_book"] = _parse_json_box("Character Book", self._get_box(self.json_boxes["character_book"]), None)
+        character_book = _parse_json_box("Character Book", self._get_box(self.json_boxes["character_book"]), None)
+        if character_book is None:
+            data.pop("character_book", None)
+        else:
+            data["character_book"] = character_book
         data["extensions"] = _parse_json_box("Extensions", self._get_box(self.json_boxes["extensions"]), {})
 
         extra_data = _parse_json_box("Other data fields", self._get_box(self.json_boxes["extra_data"]), {})
@@ -538,6 +590,33 @@ class CardEditorApp(tk.Tk):
         self._load_into_form(loaded.card)
         self.status_var.set(f"Opened: {loaded.path} [{loaded.chunk_keyword}]")
 
+    def create_v3_card(self) -> None:
+        self.create_card_from_png("v3")
+
+    def create_v2_card(self) -> None:
+        self.create_card_from_png("v2")
+
+    def create_card_from_png(self, card_version: str) -> None:
+        filename = filedialog.askopenfilename(
+            title=f"Create a Character Card {card_version.upper()} from PNG",
+            filetypes=(("PNG files", "*.png"), ("All files", "*.*")),
+        )
+        if not filename:
+            return
+        try:
+            loaded = new_card_from_png(filename, card_version)
+        except Exception as exc:
+            messagebox.showerror("New card failed", str(exc))
+            return
+
+        self.source_path = loaded.path
+        self.current_path = None
+        self.chunk_keyword = loaded.chunk_keyword
+        self._load_into_form(loaded.card)
+        self.status_var.set(
+            f"New Character Card {card_version.upper()} from: {loaded.path.name}. Use Save or Save As to choose a new file."
+        )
+
     def save_file(self) -> None:
         if self.current_path is None or self.source_path is None:
             self.save_file_as()
@@ -551,7 +630,8 @@ class CardEditorApp(tk.Tk):
         filename = filedialog.asksaveasfilename(
             title="Save Chub/SillyTavern PNG card as",
             defaultextension=".png",
-            initialfile=self.current_path.name if self.current_path else "character_card.png",
+            initialdir=str(self.source_path.parent),
+            initialfile=self.current_path.name if self.current_path else f"{self.source_path.stem}_card.png",
             filetypes=(("PNG files", "*.png"), ("All files", "*.*")),
         )
         if not filename:
