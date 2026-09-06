@@ -46,6 +46,16 @@ Requirements: Python 3.10+ with `tkinter`.
 python -m unittest .\test_card_editor_core.py
 ```
 
+### Build the Portable Windows EXE
+
+Python 3.10+ with `tkinter` is required on the build machine. From PowerShell:
+
+```powershell
+.\build.ps1
+```
+
+The script creates an isolated `.venv`, installs the pinned PyInstaller version, and writes the portable application to `dist\Character Card Pro.exe`. Python is bundled into the EXE and is not required on the end user's computer.
+
 ### Format and Safety Notes
 
 - New cards default to Character Card V3 (`ccv3`, specification version `3.0`). V2 (`chara`, version `2.0`) remains available for compatibility.

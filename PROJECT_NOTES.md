@@ -15,7 +15,7 @@
 - V2 and V3 cards use their native envelope (`spec`, `spec_version`, and `data`) internally. Legacy flat data is normalized to a V2 envelope for editing.
 - Loaded cards are deep-copied. Unrecognized `data` and top-level fields remain in the model and are exposed in the Advanced JSON tab, so they survive a normal edit/save cycle.
 - The GUI is a single Tkinter window with tabs for core fields, prompts, metadata, advanced JSON, and a full JSON preview.
-- The upstream repository contains no PyInstaller spec, build script, workflow, or dependency manifest. The release notes mention an EXE, but its exact build command is not reproducible from the checked-in baseline. A reproducible portable build remains a later milestone.
+- The upstream repository contains no PyInstaller spec, build script, workflow, or dependency manifest. The derivative now provides `build.ps1` and a pinned `requirements-build.txt`; generated build output and transient spec files remain ignored.
 
 ## MVP Decisions
 
@@ -28,7 +28,8 @@
 
 - Unit coverage checks existing cards, V2/V3 creation, V3 priority, unknown-field survival, source-file immutability, and preservation of all non-card PNG chunks.
 - A generated V3 card was decoded independently using the same `png-chunks-extract` and `png-chunk-text` packages used by SillyTavern's current character-card parser.
-- A GUI construction smoke test could not run in the bundled automation Python because its Tcl/Tk library is unusable. Core modules compile successfully; interactive launch still needs verification with a normal Windows Python/Tk installation or the later packaged EXE.
+- The bundled automation Python had an unusable Tcl/Tk library, but the user later confirmed the source application launches under a normal Windows Python/Tk installation.
+- The portable EXE was built with Python 3.14.7 and PyInstaller 6.22.2. It remained running through a five-second packaged-application startup smoke test, confirming that the bundled Tcl/Tk runtime initialized.
 
 Specification references:
 
