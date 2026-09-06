@@ -16,6 +16,7 @@ It reads character metadata embedded in PNG text chunks, edits the card fields i
 
 - Create a new Character Card V3 from any ordinary PNG with one click, or choose V2 from the File menu.
 - Open PNG character cards that store base64 JSON in `chara` or `ccv3` text chunks.
+- Open an existing character-card PNG directly from Windows by associating `.png` files with Character Card Pro or using **Open with**.
 - Edit common Character Card V2/V3 fields, including name, description, personality, scenario, first message, example dialogues, creator notes, system prompt, post-history instructions, tags, alternate greetings, character book JSON, and extensions JSON.
 - Supports UTF-8 content, including English, Chinese, Japanese, and other languages inside the card data.
 - Provides Open, Save, and Save As.
@@ -29,6 +30,8 @@ It reads character metadata embedded in PNG text chunks, edits the card fields i
 3. The first save of a new card always asks for a destination so the source artwork is not overwritten accidentally.
 
 To edit an existing V2 or V3 card, choose **Open**, make the changes, then use **Save** or **Save As**.
+
+You can also right-click an existing character-card PNG in Windows, choose **Open with**, and select `Character Card Pro.exe`. Ordinary PNGs without card metadata should still be opened through **New V3 Card from PNG** (or the V2 option in the File menu).
 
 ### Download
 
@@ -72,4 +75,3 @@ The script creates an isolated `.venv`, installs the pinned PyInstaller version,
 Character Card Pro is based on the original [Chub PNG Character Card Editor](https://github.com/linnnn89/chub-png-card-editor) created by [linnnn89](https://github.com/linnnn89). Their compact Tkinter application and direct PNG metadata-preservation approach provided the foundation for this derivative.
 
 The original project is MIT-licensed and copyright © 2026 linnnn89. Its copyright notice and license terms are preserved in [LICENSE](LICENSE), as required. This derivative is not presented as an official release of or endorsement by the upstream author.
-```

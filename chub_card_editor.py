@@ -5,6 +5,7 @@ import copy
 import json
 import os
 import struct
+import sys
 import tempfile
 import zlib
 from dataclasses import dataclass
@@ -578,17 +579,21 @@ class CardEditorApp(tk.Tk):
         )
         if not filename:
             return
+        self.open_path(filename)
+
+    def open_path(self, path: os.PathLike[str] | str) -> bool:
         try:
-            loaded = load_card(filename)
+            loaded = load_card(path)
         except Exception as exc:
             messagebox.showerror("Open failed", str(exc))
-            return
+            return False
 
         self.source_path = loaded.path
         self.current_path = loaded.path
         self.chunk_keyword = loaded.chunk_keyword
         self._load_into_form(loaded.card)
         self.status_var.set(f"Opened: {loaded.path} [{loaded.chunk_keyword}]")
+        return True
 
     def create_v3_card(self) -> None:
         self.create_card_from_png("v3")
@@ -654,8 +659,12 @@ class CardEditorApp(tk.Tk):
         messagebox.showinfo("Saved", f"Saved PNG card:\n{self.current_path}")
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> None:
+    startup_args = sys.argv[1:] if argv is None else argv
     app = CardEditorApp()
+    if startup_args:
+        startup_path = Path(startup_args[0])
+        app.after_idle(lambda: app.open_path(startup_path))
     app.mainloop()
 
 

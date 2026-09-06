@@ -4,6 +4,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -12,6 +13,7 @@ from chub_card_editor import (
     PngChunk,
     _make_text_chunk,
     load_card,
+    main,
     new_card_from_png,
     normalize_for_editing,
     read_png_chunks,
@@ -162,6 +164,19 @@ class CardEditorCoreTests(unittest.TestCase):
             self.assertEqual(reloaded["vendor_top_level"], {"keep": True})
             self.assertEqual(reloaded["data"]["vendor_data"], [1, 2, 3])
             self.assertEqual(reloaded["data"]["extensions"]["vendor/example"], {"enabled": True})
+
+    @patch("chub_card_editor.CardEditorApp")
+    def test_main_opens_png_path_passed_by_windows(self, app_class) -> None:
+        app = app_class.return_value
+        startup_path = Path(r"C:\Character Cards\Alice Card.png")
+
+        main([str(startup_path)])
+
+        app.after_idle.assert_called_once()
+        callback = app.after_idle.call_args.args[0]
+        callback()
+        app.open_path.assert_called_once_with(startup_path)
+        app.mainloop.assert_called_once_with()
 
 
 if __name__ == "__main__":
