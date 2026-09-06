@@ -1,8 +1,10 @@
 # Character Card Pro
 
-A simple Windows desktop utility for creating and editing PNG character cards. It runs completely locally: no account, browser, server, telemetry, or network connection is used at runtime.
+Character Card Pro is a lightweight, completely offline Windows desktop utility for PNG character cards. It can create a new Character Card V3 or V2 from an ordinary PNG, open and edit existing cards, and save the finished card without re-encoding the artwork or silently discarding unknown metadata.
 
-> **Download:** Get the latest portable Windows build from this repository's [Releases page](../../releases/latest). Until the first derivative release is published, run the application from source as described below.
+There are no accounts, browser components, hosted services, telemetry, or runtime network requests.
+
+> **Download:** Get the latest portable Windows EXE from the [Releases page](../../releases/latest).
 
 ## English
 
@@ -22,7 +24,7 @@ It reads character metadata embedded in PNG text chunks, edits the card fields i
 
 ### Quick Start
 
-1. Choose **New Card from PNG** to turn an ordinary PNG into a new V3 card, or use **File → New Card from PNG → Character Card V2** when V2 is required.
+1. Choose **New V3 Card from PNG** to turn an ordinary PNG into a new V3 card, or use **File → New Card from PNG → Character Card V2** when V2 is required.
 2. Choose the source PNG, fill in the character fields, and select **Save** or **Save As**.
 3. The first save of a new card always asks for a destination so the source artwork is not overwritten accidentally.
 
@@ -31,6 +33,8 @@ To edit an existing V2 or V3 card, choose **Open**, make the changes, then use *
 ### Download
 
 For normal Windows use, download the portable EXE from the [GitHub Releases page](../../releases/latest).
+
+The current build is not digitally signed, so Windows may display an Unknown Publisher or SmartScreen warning.
 
 ### Run From Source
 
@@ -63,9 +67,11 @@ The script creates an isolated `.venv`, installs the pinned PyInstaller version,
 - PNG chunks are copied directly; image pixels are not decoded or recompressed.
 - Normal use is fully offline and makes no network requests.
 
-### Attribution and License
+### Credits and License
 
-This project is derived from [linnnn89/chub-png-card-editor](https://github.com/linnnn89/chub-png-card-editor), originally copyright © 2026 linnnn89. The upstream MIT license and copyright notice are preserved in [LICENSE](LICENSE).
+Character Card Pro is based on the original [Chub PNG Character Card Editor](https://github.com/linnnn89/chub-png-card-editor) created by [linnnn89](https://github.com/linnnn89). Their compact Tkinter application and direct PNG metadata-preservation approach provided the foundation for this derivative.
+
+The original project is MIT-licensed and copyright © 2026 linnnn89. Its copyright notice and license terms are preserved in [LICENSE](LICENSE), as required. This derivative is not presented as an official release of or endorsement by the upstream author.
 
 ## 中文
 
